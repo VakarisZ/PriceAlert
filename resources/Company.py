@@ -2,20 +2,22 @@ from flask import request
 from flask_restful import Resource
 from models.Model import db
 from models.Company import Company, CompanySchema
+from resources.Token import TokenResource
 
 companies_schema = CompanySchema(many=True)
 company_schema = CompanySchema()
 
 
 class CompanyResource(Resource):
-    @staticmethod
-    def get():
+
+    @TokenResource.token_required
+    def get(self):
         companies = Company.query.all()
         companies = companies_schema.dump(companies).data
         return {'status': 'success', 'data': companies}, 200
 
-    @staticmethod
-    def post():
+    @TokenResource.token_required
+    def post(self):
         json_data = request.get_json(force=True)
         if not json_data:
             return {'message': 'Input data not provided/not in json'}, 400
@@ -35,8 +37,8 @@ class CompanyResource(Resource):
 
         return {"status": 'success', 'data': result}, 201
 
-    @staticmethod
-    def put():
+    @TokenResource.token_required
+    def put(self):
         json_data = request.get_json(force=True)
         if not json_data:
             return {'message': 'No input data provided'}, 400
@@ -69,8 +71,8 @@ class CompanyResource(Resource):
 
         return {"status": 'success', 'data': result}, 201
 
-    @staticmethod
-    def delete():
+    @TokenResource.token_required
+    def delete(self):
         json_data = request.get_json(force=True)
         if not json_data:
             return {'message': 'No input data provided'}, 400

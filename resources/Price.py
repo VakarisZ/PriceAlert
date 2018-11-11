@@ -3,17 +3,21 @@ from flask_restful import Resource
 from models.Company import Company
 from models.Price import PriceSchema, Price
 from models.Model import db
+from resources.Token import TokenResource
 
 prices_schema = PriceSchema(many=True)
 price_schema = PriceSchema()
 
 
 class PriceResource(Resource):
+
+    @TokenResource.token_required
     def get(self, symbol):
         prices = Price.query.filter_by(symbol=symbol).all()
         prices = prices_schema.dump(prices).data
         return {"status": "success", "data": prices}, 200
 
+    @TokenResource.token_required
     def post(self, symbol):
         json_data = request.get_json(force=True)
         if not json_data:
@@ -42,6 +46,7 @@ class PriceResource(Resource):
 
         return {'status': "success", 'data': result}, 201
 
+    @TokenResource.token_required
     def patch(self, symbol):
         json_data = request.get_json(force=True)
         if not json_data:

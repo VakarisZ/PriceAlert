@@ -7,20 +7,20 @@ user_schema = UserSchema()
 
 
 class UserResource(Resource):
-    @staticmethod
-    def post():
+
+    def post(self):
         json_data = request.get_json(force=True)
+        data, errors = user_schema.load(json_data)
+        if errors:
+            return errors, 422
         if not json_data:
             return {'message': 'No input data provided'}, 400
-        data, errors = user_schema.load(json_data)
         if json_data['email'] is None or json_data['password'] is None:
             return {'message': 'No input data provided'}, 400  # missing arguments
-        if User.query.filter_by(email=data['email']).first() is not None:
+        if User.query.filter_by(email=json_data['email']).first() is not None:
             return {'message': 'No input data provided'}, 400 # existing user
-        user = User(email=data['email'], password=json_data['password'])
-        data, errors = user_schema.load(user_schema.dump(user).data)
-        if errors:
-            return {"status": "error", "data": errors}, 422
+        user = User(email=json_data['email'], password=json_data['password'])
+        db.session.add(user)
         db.session.commit()
         result = user_schema.dump(user).data
         return {'status': "success", 'data': result}, 201

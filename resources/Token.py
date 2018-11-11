@@ -2,6 +2,8 @@ from flask_restful import Resource
 import app
 from flask_httpauth import HTTPBasicAuth
 from models.User import User
+from functools import wraps
+from flask import request
 
 g = app
 
@@ -20,5 +22,18 @@ class TokenResource(Resource):
 
     @auth.login_required
     def post(self):
-        token = self.user.generate_auth_token(app)
+        token = g.user.generate_auth_token(app)
         return {'token': token.decode('ascii')}, 200
+
+    @staticmethod
+    def token_required(f):
+        @wraps(f)
+        def _token_required(*args, **kwargs):
+            if 'username' not in request.authorization:
+                return {'message': 'No oauth token provided'}, 401
+            user = User.verify_auth_token(request.authorization['username'])
+            if user is None:
+                return {'message': 'Bad oauth token'}, 403
+            g.user = user
+            return f(*args, **kwargs)
+        return _token_required
