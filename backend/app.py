@@ -1,11 +1,10 @@
-from flask import Blueprint, request
+from flask import Blueprint
 from flask_restful import Api
 from resources.Company import CompanyResource
 from resources.Price import PriceResource
 from resources.User import UserResource
 from resources.Token import TokenResource
 from resources.Category import CategoryResource
-from functools import wraps
 
 api_bp = Blueprint('api', __name__)
 api = Api(api_bp)

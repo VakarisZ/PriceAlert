@@ -1,5 +1,5 @@
 from flask_restful import Resource
-import app
+from backend import app
 from flask_httpauth import HTTPBasicAuth
 from models.User import User
 from functools import wraps

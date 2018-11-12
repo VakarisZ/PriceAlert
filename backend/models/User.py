@@ -4,7 +4,6 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from models.Model import db, ma
 from config import SECRET_KEY, EXPIRATION
-from functools import wraps
 
 
 class User(db.Model):
