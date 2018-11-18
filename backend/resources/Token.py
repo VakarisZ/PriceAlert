@@ -29,9 +29,11 @@ class TokenResource(Resource):
     def token_required(f):
         @wraps(f)
         def _token_required(*args, **kwargs):
-            if 'username' not in request.authorization:
+            token = request.headers.get('Authorization')
+            if not token:
                 return {'message': 'No oauth token provided'}, 401
-            user = User.verify_auth_token(request.authorization['username'])
+            token = token.replace('Bearer ', "")
+            user = User.verify_auth_token(token)
             if user is None:
                 return {'message': 'Bad oauth token'}, 403
             g.user = user

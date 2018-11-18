@@ -8,6 +8,7 @@ user_schema = UserSchema()
 
 class UserResource(Resource):
 
+    # Registration
     def post(self):
         json_data = request.get_json(force=True)
         data, errors = user_schema.load(json_data)
@@ -16,9 +17,9 @@ class UserResource(Resource):
         if not json_data:
             return {'message': 'No input data provided'}, 400
         if json_data['email'] is None or json_data['password'] is None:
-            return {'message': 'No input data provided'}, 400  # missing arguments
+            return {'message': 'Not enough info provided'}, 400  # missing arguments
         if User.query.filter_by(email=json_data['email']).first() is not None:
-            return {'message': 'No input data provided'}, 400 # existing user
+            return {'message': 'User with this e-mail is already registered'}, 400 # existing user
         user = User(email=json_data['email'], password=json_data['password'])
         db.session.add(user)
         db.session.commit()
